@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="test">
+    <!-- id :表示映射文件中的sql,将sql封装到mappedStatement对象中，所以将id称为statement的id
+         parameterType:表示输入参数类型
+         #{}：表示占位符
+         #{id}:其中的参数表示输入参数名称，参数名称就是id,若输入参数是简单类型，则#{}中的参数名称可以任意
+         resultType:表示sql返回类型，对应Java类
+    -->
+    <select id="findUserById" parameterType="int" resultType="com.dianping.po.User">
+      SELECT * FROM USER WHERE id=#{id};
+    </select>
+    <!-- 注意 1：resultType表示一个java对象的类型，即使查询结果为多个，仍使用resultType
+                 2:#{}表示占位符，${}用来连接字符串，起到字符串拼接的作用，存在sql注入的危险
+                 ${value}若传递简单参数，则里面只能用value表示，而#{}没有这种限制
+        -->
+    <select id="findUserByName" parameterType="java.lang.String" resultType="com.dianping.po.User">
+        SELECT * FROM USER WHERE username LIKE "%${value}%";
+    </select>
+
+</mapper>
+
+
+
