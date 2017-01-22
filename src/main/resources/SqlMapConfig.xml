@@ -3,6 +3,23 @@
         PUBLIC "-//mybatis.org//DTD Config 3.0//EN"
         "http://mybatis.org/dtd/mybatis-3-config.dtd">
 <configuration>
+
+    <!-- 加载属性文件-->
+    <properties resource="db.properties">
+        <!--里面的property 也是可以定义 作用和resource属性一样，但是这个优先加载,没有才加载resource里面的文件 -->
+        <!--不建议使用此方式<property name="jdbc.driver" value="xxxxxx"></property>-->
+    </properties>
+    <!--加载全局配置参数
+    <settings>
+        <setting name="" value=""/>
+    </settings>-->
+    <!-- 定义别名-->
+    <typeAliases>
+        <!-- 定义单个别名-->
+        <!-- <typeAlias type="com.dianping.po.User" alias="user"></typeAlias>-->
+        <!-- 指定包名，mybatis自动扫描包中类，自动定义别名，别名即为包中类的名称，首字母大写小写都可 -->
+        <package name="com.dianping.po"></package>
+    </typeAliases>
     <!-- 和spring整合后 environments将废除 -->
     <environments default="development">
         <environment id="development">
@@ -10,10 +27,10 @@
             <transactionManager type="JDBC"/>
             <!-- 数据库连接池，由mybatis -->
             <dataSource type="POOLED">
-                <property name="driver" value="com.mysql.jdbc.Driver"/>
-                <property name="url" value="jdbc:mysql://localhost:3306/mybatis?characterEncoding=utf-8"/>
-                <property name="username" value="root"/>
-                <property name="password" value=""/>
+                <property name="driver" value="${jdbc.driver}"/>
+                <property name="url" value="${jdbc.url}"/>
+                <property name="username" value="${jdbc.username}"/>
+                <property name="password" value="${jdbc.password}"/>
             </dataSource>
         </environment>
     </environments>
@@ -21,7 +38,13 @@
          注意：resource的路径为classpath为总路径，此处为sqlmap下User.xml-->
     <mappers>
         <mapper resource="sqlmap/User.xml" />
-        <mapper resource="mapper/UserMapper.xml" />
-
+        <!--<mapper resource="mapper/UserMapper.xml" />-->
+       <!--通过mapper接口加载mapper.xml文件，有前提：必须mapper.xml文件名称和Mapper接口名称一致，且在同一个包下,同时使用mappper代理的方式
+        严重注意：idea中默认java下的xml文件是不会被编译到classpath下，因此无论是单元测试还是执行时，在编译过程中，java下的xml文件
+        不会被编译到classpath下，会报错，解决办法就是在mave-pom.xml-build中添加Java中的xml为可编译-->
+       <!--<mapper class="com.dianping.mapper.UserMapper" />-->
+        <!--推荐使用：此种批量加载也是很好，使用条件和上面一种条件一致 -->
+        <package name="com.dianping.mapper"></package>
     </mappers>
+
 </configuration>

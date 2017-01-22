@@ -9,7 +9,7 @@
          #{id}:其中的参数表示输入参数名称，参数名称就是id,若输入参数是简单类型，则#{}中的参数名称可以任意
          resultType:表示sql返回类型，对应Java类
     -->
-    <select id="findUserById" parameterType="int" resultType="com.dianping.po.User">
+    <select id="findUserById" parameterType="int" resultType="User">
       SELECT * FROM USER WHERE id=#{id};
     </select>
     <!-- 注意 1：resultType表示一个java对象的类型，即使查询结果为多个，仍使用resultType

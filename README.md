@@ -42,3 +42,21 @@ Tips:
     1）当输出为多条语句时，mybatis会使用selectList()
     2) mapper接口的方法参数只能有一个，一般来说一个即可。若想多个参数，可以使用pojo满足不同业务的需求。
     注意持久层方法参数可以为包装类型、map,   service方法中建议不要使用包装类型（不利于业务的扩展）
+
+4、SqlMapConfig.xml中有许多属性需要配置
+   1)properties属性
+     需求：通常我们会把例如数据库的连接一些参数专门配置到特定的文件中，如db.properties,然后mybatis将该文件加载
+     此时不需要对SqlMaConfig.xml中的数据库连接参数进行硬编码，方便其他的xml文件对统一管理的db文件再次使用
+   2）settings
+     重要用于配置mybatis的二级缓存，延迟加载等等特性
+   3）typeAliases别名（重点）
+     在mapper.xml中会使用Statement，其中有parameterType和resultType会使用全限定类名类型
+     比较繁琐，因此可以使用别名，例如mybatis的默认内置别名int<==>java.lang.Integer，我们也可自定义别名
+     分为单个定义和批量定义（更常用）
+   4）typeHandlers 类型处理器
+     用于处理jdbc类型和java类型之间的转换，一般不需要我们自定义，内置的已经够用
+   5）mappers 映射
+     一种为：单个映射文件的加载，通过mapper标签的resource属性，路径为classpath下
+                              通过mapper标签的url属性，路径为绝对路径file:///D:\xxx
+     一种为：通过mapper接口来加载mapper.xml文件
+     一种为：package批量加载，推荐使用，使用条件和第二种一样
