@@ -21,6 +21,7 @@
          注意：resource的路径为classpath为总路径，此处为sqlmap下User.xml-->
     <mappers>
         <mapper resource="sqlmap/User.xml" />
+        <mapper resource="mapper/UserMapper.xml" />
 
     </mappers>
 </configuration>
