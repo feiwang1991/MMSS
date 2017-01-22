@@ -20,6 +20,44 @@
         SELECT * FROM USER WHERE username LIKE "%${value}%";
     </select>
 
+    <!--添加用户
+        parameterType:指定输入参数类型为pojo,这里因为是插入用户，需要插入java对象，并不是和查询一样的简单参数类型
+        #{}中指定pojo的属性名称
+
+        有时插入主表中记录后，从表需要主表中的主键值，作为从表的外键插入到从表中，因此经常需要Insert之后，获取该条记录的主键ID
+          (1)其中一种方法是 获取mysql自增形式的主键 在mysql中使用函数 last_insert_id()得到插进表中的该行主键值，只适用于自增主键
+         故可在mappedStatement中进行配置：
+         keyProperty:表示查询出的ＩＤ放入parameterType中同一个Java对象的对应属性中
+         order:表示在insert sql执行之后执行
+         resultType:表示返回结果的类型
+            -->
+    <insert id="insertUser" parameterType="com.dianping.po.User">
+        <selectKey keyProperty="id" order="AFTER" resultType="java.lang.Integer">
+          select LAST_INSERT_ID();
+        </selectKey>
+        INSERT INTO  USER(username,birthday,sex,address) VALUES(#{username},#{birthday},#{sex},#{address});
+    </insert>
+    <!-- (2)另一种方式就是非自增主键形式，获取主键，通过UUID，首先必须把id改成varchar类型
+          另外，uuid()函数方式是先获取函数值，在把该值输入到user中进行insert插入，因此相对于插入顺序是before
+          -->
+    <insert id="insertUserAndGetUUID" parameterType="com.dianping.po.User">
+        <!--使用MySQL的uuid生成主键 注意此时的insert插入语句需要有id,而自增不需要-->
+        <selectKey keyProperty="id" order="BEFORE" resultType="java.lang.String">
+            select UUID(); <!--若是oracle，可用select 序列名.nextval()其他一样 -->
+        </selectKey>
+        INSERT INTO  USER(id,username,birthday,sex,address) VALUES(#{id},#{username},#{birthday},#{sex},#{address});
+    </insert>
+
+    <!--删除user -->
+    <delete id="deleteUserById" parameterType="java.lang.Integer">
+        DELETE FROM  USER WHERE  id=#{id};
+    </delete>
+    <!--根据用户ID 更新用户信息，入参为pojo对象 -->
+    <update id="updateUser" parameterType="com.dianping.po.User">
+        <!--注意，入参对象中ID必须存在，否则就删除额所有
+            另外，此处#{id}表示入参对象中的属性-->
+        update USER set username=#{username},birthday=#{birthday},sex=#{sex},address=#{address} where id=#{id};
+    </update>
 </mapper>
 
 

@@ -8,6 +8,7 @@ import org.apache.ibatis.session.SqlSessionFactoryBuilder;
 import org.junit.Test;
 
 import java.io.InputStream;
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -54,7 +55,53 @@ public class UserTest {
         //关闭会话，连接池中一个连接对应一个会话，关闭会话后，连接进入连接池
         sqlSession.close();
     }
-
+    @Test
+    public void insertUserTest() throws Exception{
+        String reource="SqlMapConfig.xml";
+        InputStream input = Resources.getResourceAsStream(reource);
+        SqlSessionFactory sqlSessionFactory=new SqlSessionFactoryBuilder().build(input);
+        SqlSession sqlSession=sqlSessionFactory.openSession();
+        //注意statement 有namespace test, 格式为namespace.statementId
+        User u=new User();
+        u.setUsername("小王2");
+        u.setBirthday(new Date());
+        u.setSex("男");
+        u.setAddress("非洲尼日尼亚2");
+        sqlSession.insert("test.insertUser", u);
+        sqlSession.commit();
+        //关闭会话，连接池中一个连接对应一个会话，关闭会话后，连接进入连接池
+        System.out.println(u.getId());
+        sqlSession.close();
+    }
+    @Test
+    public void deleteUserTest() throws Exception{
+        String reource="SqlMapConfig.xml";
+        InputStream input = Resources.getResourceAsStream(reource);
+        SqlSessionFactory sqlSessionFactory=new SqlSessionFactoryBuilder().build(input);
+        SqlSession sqlSession=sqlSessionFactory.openSession();
+        sqlSession.delete("test.deleteUserById", 5);
+        sqlSession.commit();
+        //关闭会话，连接池中一个连接对应一个会话，关闭会话后，连接进入连接池
+        sqlSession.close();
+    }
+    @Test
+    public void updateUserTest() throws Exception{
+        String reource="SqlMapConfig.xml";
+        InputStream input = Resources.getResourceAsStream(reource);
+        SqlSessionFactory sqlSessionFactory=new SqlSessionFactoryBuilder().build(input);
+        SqlSession sqlSession=sqlSessionFactory.openSession();
+        //注意statement 有namespace test, 格式为namespace.statementId
+        User u=new User();
+        u.setId(4);
+        u.setUsername("大王");
+        u.setBirthday(new Date());
+        u.setSex("男");
+        u.setAddress("非洲尼日尼亚2");
+        sqlSession.update("test.updateUser",u);
+        sqlSession.commit();
+        //关闭会话，连接池中一个连接对应一个会话，关闭会话后，连接进入连接池
+        sqlSession.close();
+    }
 
 
 } 
