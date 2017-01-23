@@ -20,6 +20,7 @@
         <!-- 指定包名，mybatis自动扫描包中类，自动定义别名，别名即为包中类的名称，首字母大写小写都可 -->
         <package name="com.dianping.po"></package>
         <package name="com.dianping.vo"></package>
+        <package name="com.dianping.pojo"></package>
     </typeAliases>
     <!-- 和spring整合后 environments将废除 -->
     <environments default="development">

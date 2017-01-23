@@ -28,6 +28,7 @@ Tips:
    2）编写mapper接口，该接口需要遵循一些开发规范，可以让Mybatis自动生成实现mapper接口的代理对象
 
    以下为重要开发规范：
+     0) mapper.xml文件名字和mapper.java名字一样，且在同一个目录下
      1）mapper.xml中的namespace值为mapper接口的全限定名称地址
      2）mapper.java接口中方法名字和mapper.xml中statementID一致
      3）mapper.java接口中方法中参数和mapper.xml中parameterType入参类型一致
@@ -96,5 +97,26 @@ Tips:
      若想输入多个简单类型如 id in (1,2,4)这种sql，可以使用foreach标签，在sql片段或者在select标签中进行拼接。
      需要再输入的包装类中定义list<Integer> ids,用ids进行匹配
 
+8、高级映射
+   实现一对一查询、一对多查询、多对多查询、延迟加载
+   1)一对一查询： 例如查询订单（主）和对应购买用户的信息
+     resultType方式：即在关联的一对一查询时，查询出两张表的字段内容，需要自己新建一个pojo类去封装查询出来的数据，返回类型的resultType就
+     写这个类即可。方法比较简单。
+     resultMap方式：在关联一对一查询时，查询出两张表的字段内容，不需要新建一个pojo,而是在原来主表po的基础上，加上一个从表Java对象字段，
+     即在主表对象中加一个从表引用，其实这也是构造了一种pojo,在mapper.xml中配置时，除了配置主表的id,result之外，还需要配置一对一
+     association（用于一对一配置关联对象），相对于resultType比较复杂一点，但是在一些特殊场合，比如需要使用延迟加载等等，只能使用resultMap.
+   2)一对多查询： 例如查询订单（主）及订单明细信息
+     resultType方式：因为是一对多查询，在查询出主表和从表的字段时，可能会出现多条主表字段相同但是从表字段不同的数据。用自己定义的一个pojo类
+     去进行封装，只能全部查询的属性拿出来封装，不能形成一个主表对象中包含一个从表List的这种非常好的效果，这个效果需要我们自己后续手动处理。
+     非常不好。
+     resultMap方式： 在一对多中效果十分好。与一对一类似，mapper.xml文件中把association换成collection即可，同时在原始po类中加上从表
+     List集合属性，这样mybatis可以根据配置文件自动进行resultMap映射。非常好用。注意resultMap配置时可以继承。减少冗余代码。
+
+9、查询缓存
+   一级缓存、二级缓存
+
+10、mybatis和spring的整合
+
+11、逆向工程，须会用
 
 

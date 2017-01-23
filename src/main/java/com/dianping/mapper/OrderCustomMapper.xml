@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.dianping.mapper.OrderCustomMapper">
+    <!--查询订单（主）和对应购买用户的信息，resultType方式进行一对一关联查询 -->
+    <select id="findOrderCustom" resultType="orderscustom">
+                SELECT orders.*,username,sex,address FROM orders,USER WHERE orders.user_id=user.id;
+        </select>
+
+    <!--定义resultMap -->
+    <resultMap id="orderCustomResultMap" type="orders">
+        <!--注意主表对象和关联的对象的id即主键都必须写上，即使关联对象没有查询主键信息 -->
+        <id column="id" property="id"></id>
+        <result column="user_id" property="userId"></result>
+        <result column="number" property="number"></result>
+        <result column="createtime" property="createtime"></result>
+        <result column="note" property="note"></result>
+        <!--一对一对关联对象进行映射resultMap设置时候，需要用到这个标签
+             property对应的是orders类中的关联引用-->
+        <association property="user" javaType="com.dianping.po.User">
+            <!-- 注意，即使不查询ＩＤ也是必须写-->
+            <id column="id" property="id"></id>
+            <result column="username" property="username"></result>
+            <result column="sex" property="sex"></result>
+            <result column="address" property="address"></result>
+        </association>
+    </resultMap>
+    <!--使用resultmap的方式进行一对一关联查询，其实这个也是一种形式的pojo,类似resultType -->
+    <select id="findOrderCustomResultMap" resultMap="orderCustomResultMap">
+                SELECT orders.*,username,sex,address FROM orders,USER WHERE orders.user_id=user.id;
+        </select>
+
+
+    <!--查询订单（主）及订单明细信息，定义resultMap
+    resultMap之间可以继承，减少代码冗余-->
+    <resultMap id="OrderAndOrderDetailResultMap" type="orders" extends="orderCustomResultMap">
+        <!--继承后包含order表中信息 -->
+        <!--继承后包含user表中信息 -->
+        <!--配置一对多的List<orderdetail>信息
+        注意：在单对单时候使用association,单对多时候，使用collection进行对Java集合进行配置
+        ofType是表示集合中Java类的映射-->
+        <collection property="orderDetails" ofType="orderdetail">
+            <id column="orderdetail_id" property="id"></id>
+            <result column="orders_id" property="ordersId"></result>
+            <result column="items_id" property="itemId"></result>
+            <result column="items_num" property="itemsNum"></result>
+        </collection>
+
+    </resultMap>
+    <!--使用resultmap的方式进行一对一关联查询，其实这个也是一种形式的pojo,类似resultType -->
+    <select id="findOrderAndOrderDetail" resultMap="OrderAndOrderDetailResultMap">
+        SELECT orders.*,username,sex,address,orderdetail.id orderdetail_id,orderdetail.orders_id,
+        orderdetail.items_id,orderdetail.items_num
+        FROM orders,USER,orderdetail
+        WHERE orders.user_id=user.id AND orders.id=orderdetail.orders_id;
+        </select>
+</mapper>
+
+
+
