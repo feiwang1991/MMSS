@@ -60,3 +60,41 @@ Tips:
                               通过mapper标签的url属性，路径为绝对路径file:///D:\xxx
      一种为：通过mapper接口来加载mapper.xml文件
      一种为：package批量加载，推荐使用，使用条件和第二种一样
+
+5、输入映射
+   通过parameterType指定输入参数类型，类型可以是简单类型，hashmap（key-value,key作为查询参数），pojo的包装类型
+   5）传递pojo的包装对象
+      例如查询条件很复杂，因为mapper.java接口中只能有一个输入参数，故可以自定义一个包装类，进而查询
+      po是持久层对象，vo是视图层对象，pojo是介于两者之间的一个javabean
+
+6、输出映射
+  resultType需要查询出的列名和pojo属性名称一致，可以直接自动映射
+  resultMap不需要查询出的列名和poho属性名称一致同样可以映射，但需要自定义映射。
+  1）resultType
+    使用resultType进行输出映射，只有查询出来的列名和pojo中的属性名一致时，查询出的pojo该属性才有值。
+    若查询出的列名和pojo中的属性名称全部不一样，则没有创建pojo对象
+    若查询出的列名和poo中的属性名称有一个一样，就会创建pojo对象
+    当然resultType也可以是简单类型。
+    当查询出的结果集只有一行一列时，可以使用简单类型，当有多列多行是用包装类型
+
+  2) resultMap
+     Mybatis中使用resultMap完成高级的输出结果映射。
+     若查询出来的列名和pojo的属性名不一致，则可以使用resultMap,用它对列名和pojo属性名之间做一个映射关系。
+     有2步骤：
+       [1]定义resultMap
+       [2]使用resultMap作为statement的输出类型
+
+7、动态sql
+   1）if标签
+     if 标签，用于判断条件
+     where 标签，里面含if标签，判断是否加上and
+   2）sql片段  方便开发
+     可以把常用的sql代码块提取出来，其他的statement可以引用这个sql片段
+     通常sql片段中基于单表定义，这样可重用性高，其他查询若用到这个表的sql片段也可以使用
+     另外，sql片段中不要包括where,因为如果查询中有好几个sql片段，不能有好几个where,因此where不放在sql片段中
+   3)foreach标签，通常，parameterType作为输入类型只能使用一个参数，若要多个参数可以把parameterType设置为包装类，
+     若想输入多个简单类型如 id in (1,2,4)这种sql，可以使用foreach标签，在sql片段或者在select标签中进行拼接。
+     需要再输入的包装类中定义list<Integer> ids,用ids进行匹配
+
+
+
