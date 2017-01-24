@@ -3,6 +3,7 @@ package com.dianping.po;/**
  */
 
 import java.util.Date;
+import java.util.List;
 
 /**
  *用户po
@@ -21,6 +22,16 @@ public class User {
     private Date birthday;
     //住址
     private String address;
+    //一对多包含的订单信息
+    private List<Orders> orders;
+
+    public List<Orders> getOrders() {
+        return orders;
+    }
+
+    public void setOrders(List<Orders> orders) {
+        this.orders = orders;
+    }
 
     public int getId() {
         return id;

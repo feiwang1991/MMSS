@@ -54,7 +54,64 @@
         orderdetail.items_id,orderdetail.items_num
         FROM orders,USER,orderdetail
         WHERE orders.user_id=user.id AND orders.id=orderdetail.orders_id;
-        </select>
+    </select>
+
+    <!--查询查询用户和用户所购买的商品信息，使用resultmap的方式进行多对多关联-->
+    <resultMap id="UserAndItemsResultMap" type="com.dianping.po.User">
+        <!-- 用户信息 -->
+        <id column="id" property="id"/>
+        <result column="username" property="username"/>
+        <result column="birthday" property="birthday"/>
+        <result column="sex" property="sex"/>
+        <result column="address" property="address"/>
+        <!-- 订单信息 -->
+        <collection property="orders" ofType="com.dianping.po.Orders">
+            <id column="orders_id" property="id"/>
+            <result column="user_id" property="userId"/>
+            <result column="number" property="number"/>
+            <result column="createtime" property="createtime"/>
+            <!--订单明细信息 -->
+            <collection property="orderDetails" ofType="com.dianping.po.OrderDetail">
+                <id column="detail_id" property="id"/>
+                <result column="orders_id" property="ordersId"/>
+                <result column="items_id" property="itemId"/>
+                <result column="items_num" property="itemsNum"/>
+                <!--商品信息 -->
+                <association property="item" javaType="com.dianping.po.Item">
+                    <id column="items_id" property="id"/>
+                    <result column="name" property="name"/>
+                    <result column="price" property="price"/>
+                    <result column="detail" property="detail"/>
+                    <result column="createtime" property="createtime"/>
+                </association>
+            </collection>
+
+        </collection>
+
+
+    </resultMap>
+    <!--查询查询用户和用户所购买的商品信息，使用resultmap的方式进行多对多关联 -->
+    <select id="findUserAndItems" resultMap="UserAndItemsResultMap">
+         SELECT
+          user.*,
+          orders.id orders_id,
+          orders.user_id,
+          orders.number,
+          orders.createtime,
+          orderdetail.id detail_id,
+          orderdetail.orders_id,
+          orderdetail.items_id,
+          orderdetail.items_num,
+          items.id items_id,
+          items.name,
+          items.price,
+          items.detail,
+          items.createtime
+         FROM
+          USER,orders,orderdetail,items
+         WHERE
+          user.id=orders.user_id AND orders.id=orderdetail.orders_id AND orderdetail.items_id=items.id;
+    </select>
 </mapper>
 
 

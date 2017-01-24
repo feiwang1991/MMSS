@@ -13,6 +13,16 @@ public class OrderDetail {
     private int ordersId;
     private int itemId;
     private int itemsNum;
+    //一对一对应的商品信息
+    private Item item;
+
+    public Item getItem() {
+        return item;
+    }
+
+    public void setItem(Item item) {
+        this.item = item;
+    }
 
     public int getId() {
         return id;

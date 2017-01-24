@@ -111,9 +111,23 @@ Tips:
      非常不好。
      resultMap方式： 在一对多中效果十分好。与一对一类似，mapper.xml文件中把association换成collection即可，同时在原始po类中加上从表
      List集合属性，这样mybatis可以根据配置文件自动进行resultMap映射。非常好用。注意resultMap配置时可以继承。减少冗余代码。
+   3)多对多查询： 例如查询用户和用户所购买的商品信息，他们没有直接关联，而是通过两个表进行关联
+     多对多实际上就是一对多，在mybatis中基本都是一对一和一对多，没什么大区别
+     查询出的主表为用户表，关联表为order,orderdetail,items
+映射思路：将用户信息映射到user中，即用户信息列映射到user属性中
+        将一个用户产生的多个订单映射到用户类中的list<orders> orderslist中，即订单信息列映射到orderslist中的orders属性中
+        将一个Order产生的多个订单明细映射到订单类中的list<orderdetails> ordertailslist中，即订单明细列映射到ordertailslist中的ordertails属性中
+        将一个ordertail订单明细对应一个商品信息映射到订单明细类中的item属性中，即查询出的商品信息列映射到item类中属性
+    注意Mybatis的一对一，一对多，多对多和Hibernate由很大不同，非常简单，在讨论java对象之间的包含关系时候
+    只需要考虑对应一张表和另一张表之间的关系，一对一就包含另一张表的对象，一对多就包含另一张表的集合对象即可，非常简单。
+
+    注意：不是任何时候都需要使用resultType,当我们需要查询所有情况的清单详情时候，需要把所有人购买的商品直接列出来即可，
+    因此不需要层层的pojo包装，而是直接使用一个新的pojo列出所有的属性即可，因此是看情况，看需求，怎么方便怎么来。
+    resultMap针对那些查询结果由特殊要求的情况。
 
 9、查询缓存
    一级缓存、二级缓存
+
 
 10、mybatis和spring的整合
 

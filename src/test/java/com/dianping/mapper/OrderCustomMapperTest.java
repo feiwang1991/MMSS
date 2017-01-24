@@ -1,6 +1,7 @@
 package com.dianping.mapper;
 
 import com.dianping.po.Orders;
+import com.dianping.po.User;
 import com.dianping.pojo.OrdersCustom;
 import org.apache.ibatis.io.Resources;
 import org.apache.ibatis.session.SqlSession;
@@ -48,6 +49,13 @@ public class OrderCustomMapperTest {
         SqlSession sqlSession=sqlSessionFactory.openSession();
         OrderCustomMapper orderCustomMapper=sqlSession.getMapper(OrderCustomMapper.class);
         List<Orders> orders=orderCustomMapper.findOrderAndOrderDetail();
+        sqlSession.close();
+    }
+    @Test
+    public void testFindUserAndItems() throws Exception {
+        SqlSession sqlSession=sqlSessionFactory.openSession();
+        OrderCustomMapper orderCustomMapper=sqlSession.getMapper(OrderCustomMapper.class);
+        List<User> users=orderCustomMapper.findUserAndItems();
         sqlSession.close();
     }
 
