@@ -30,4 +30,7 @@ public interface UserMapper {
 
     //删除用户
     public void deleteUserById(int id) throws Exception;
+
+    //修改用户
+    public void updateUser(User user) throws Exception;
 }

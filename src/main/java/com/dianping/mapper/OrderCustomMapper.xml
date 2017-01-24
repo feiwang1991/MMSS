@@ -112,6 +112,26 @@
          WHERE
           user.id=orders.user_id AND orders.id=orderdetail.orders_id AND orderdetail.items_id=items.id;
     </select>
+
+
+    <resultMap id="findOrderUserLazyLoadResultMap" type="orders">
+        <!--配置对应的订单的所有属性 -->
+        <id column="id" property="id"/>
+        <result column="user_id" property="userId"/>
+        <result column="number" property="number"/>
+        <result column="createtime" property="createtime"/>
+        <!--配置延迟加载的用户属性，使用association
+             select:表示延迟加载时再次进行查询的statement ID
+             column:表示订单表和用户表关联的字段（订单表中的），同时也作为再次查询用户表时用户ID的输入
+             注意select中id跨xml文件需要加上namespace-->
+        <association property="user" javaType="com.dianping.po.User" select="com.dianping.mapper.UserMapper.findUserById"
+                     column="user_id">
+
+        </association>
+    </resultMap>
+    <select id="findOrderUserLazyLoad" resultMap="findOrderUserLazyLoadResultMap">
+        select * from orders;
+    </select>
 </mapper>
 
 

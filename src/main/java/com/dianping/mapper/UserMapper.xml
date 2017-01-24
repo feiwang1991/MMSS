@@ -3,6 +3,10 @@
         PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.dianping.mapper.UserMapper">
+    <!--开启本mapper namespace下的二级缓存
+      默认是使用mybatis的自己实现的二级缓存实现，这种是单机的
+      我们还可以在type配置多种厂家的cache接口的不同实现类，可以实现分布式二级缓存，这里使用ehcache-->
+    <cache type="org.mybatis.caches.ehcache.EhcacheCache"/>
 
     <!-- 定义sql片段
      可以把常用的sql代码块提取出来，其他的statement可以重用这个sql片段
@@ -83,7 +87,7 @@
          #{id}:其中的参数表示输入参数名称，参数名称就是id,若输入参数是简单类型，则#{}中的参数名称可以任意
          resultType:表示sql返回类型，对应Java类
     -->
-    <select id="findUserById" parameterType="int" resultType="User">
+    <select id="findUserById" parameterType="int" resultType="User" useCache="true">
       SELECT * FROM USER WHERE id=#{id};
     </select>
     <!-- 注意 1：resultType表示一个java对象的类型，即使查询结果为多个，仍使用resultType

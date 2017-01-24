@@ -2,6 +2,7 @@ package com.dianping.po;/**
  * created by IntelliJ IDEA
  */
 
+import java.io.Serializable;
 import java.util.Date;
 import java.util.List;
 
@@ -11,7 +12,7 @@ import java.util.List;
  *create：2017-01-21  14:42
  */
 
-public class User {
+public class User implements Serializable{
     //id
     private int id;
     //用户名

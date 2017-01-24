@@ -125,12 +125,89 @@ Tips:
     因此不需要层层的pojo包装，而是直接使用一个新的pojo列出所有的属性即可，因此是看情况，看需求，怎么方便怎么来。
     resultMap针对那些查询结果由特殊要求的情况。
 
-9、查询缓存
-   一级缓存、二级缓存
+9、延迟加载  查询缓存  一级缓存、二级缓存
+   1)延迟加载
+          resultMap可以做到延迟加载，association和collection支持延迟加载的功能
+     需要的时候再同关联表的对象属性中查询，可以按需查询，因为查询单表速度比关联查询多张表快，所以需要延迟加载。
+     以前写的sql语句，是把所有需要的列都查出来，然后一一进行映射，这样是做不到延迟加载的，因此sql语句使用子查询
+          使用mybatis进行延迟加载有2个步骤：以查询订单及关联的用户信息为例
+           【1】配置select statement只查询订单信息，注意使用resultMap
+                在查询订单信息statement的resultmap中除了配置需要的订单属性外（不直接包含用户属性），加一个association,
+                使用它进行关联延迟加载，所以需要再查一次，
+           【2】在association中配置一个新的select statement，,用这个statement去查询用户信息，输入为关联的订单表的外键，输出为resultType
+            的用户表，在association标签中需要制定另一个statement的id和订单表中的关联列user_id
+        在进行测试的时候，我们从mapper.java方法中首先获得订单表的List<orders>,此时已经延迟，当我们需要关联的用户信息时，需要自己手动编写代码
+      去遍历这个List中的order,调用getUser()方法时，mybatis会根据另一个association中的statement去发起另一个查询sql,进而获取User。
+      注意：Mybatis默认没有开启延迟加载，需要我们手动在SqlMapConfig.xml中settting中进行配置：
+          【1】lazyLoadingEnable 默认为false，需要设置为true
+          【2】aggressiveLazyLoading 默认为true,表示不等getUser就可是发出sql,需要设置为false
+      我们自己也是可以实现一个延迟加载，实现两个mapper,先查一个需要的表，然后对结果集进行遍历，再根据对应外键关联查另外一个表即可。
+   2)查询缓存 （mybatis默认开启一级缓存）
+     Mybatis为了减轻数据库压力，提供查询缓存，主要分为一级缓存和二级缓存。
+     一级缓存是：sqlsession级别的缓存(hashmap结构)，不同的sqlsession一级缓存不同
+     二级缓存是：XXXmapper级别（namespace级别）的缓存，它是跨sqlsession，多个sqlsession可以共用一个二级缓存,例如UserMapper.xml和OrderMapper.xml
+     是两个不同的二级缓存。
+
+     一级缓存工作流程：第一次查询,一级缓存sqlsession没有就到数据库中查询，然后放到sqlsession,
+     第二次查询，若sqlsession有，直接查询即可，或想要增删改数据，则先删除sqlsession中的缓存，然后commit到数据库。不删除会读到脏数据。
+
+     二级缓存工作流程：sqlsession1去查询用户ＩＤ为1的用户，并存到UserMapper的二级缓存
+                     sqlsession2去查询用户id为1的用户,去缓存中查找是否存在数据，若存在，则从缓存中查询数据
+     二级缓存比一级缓存范围大，他是跨sqlsession,多个sqlsession共享一个UserMapper二级缓存
+     UserMapper缓存区域按照namespace分，其他mapper缓存有自己namespace的缓存
+     即每一个namespace的mapper有一个自己的二级缓存区域
+     若两个mapper的namespace相同，则它们的sql查询数据将缓存在同一个区域中
+
+     开启二级缓存：
+       1 在SqlMapConfig.xml中设置总开关
+          在setting中设置cachedEnabled 为true,默认为true
+       2 在各个子mapper.xml中开启二级缓存
+     注意：一级缓存的介质一定是内存，二级缓存的介质可能是内存和硬盘等等，介质不一定，因此需要对持久化对象po实现序列化接口，
+     方便以后反序列化，加入内存。故可对user实现serializable接口
+
+     注意：只有当sqlsession关闭之后，才会写入到二级缓存中，因此想测试的话，必须先关闭第一次的sqlsession.
+     如果增删改了并提交了数据，同样会清除当前namespace mapper下二级缓存中的内容。
+
+     禁用二级缓存：
+        注意：在statement中的useCache属性中设置为false,表示禁用当前statement语句的二级缓存，本mapper文件会缓存很多个statement二级缓存
+     因此可以禁用设置为false的这个，默认是true,支持二级缓存，对于不需要缓存的sql，每次都要查最新的数据的语句，是可以禁用二级缓存的.
+
+     刷新缓存（清除缓存）：
+        当增删改之后commit后，默认是会清除二级缓存，防止数据库和缓存不一致，从而出现脏读现象。
+        在statement中有flushCache属性，默认为true，即打开刷新（清除）缓存设置。
+        若我们设置为false，则可能出现脏读，因此一般情况下，就使用默认值即可。
+
+10、ehcache分布式缓存
+   mybatis无法实现分布式缓存（redis集群，memcache集群，ehcache），最多能做到在单机服务器上的mapper级别的二级缓存
+   不能解决分布式集群服务中，多台机器的缓存问题。mybatis只能解决单机问题。需要和其他分布式缓存框架整合。
+   因此有多个缓存级别：
+   用户查询数据-->负载均衡-->先查找单机Mybatis sqlsession一级缓存-->没有就找跨sqlsession的mapper级别的二级缓存（
+   这个mybatis二级缓存默认实现是单机的，可以使用ehcache等让二级缓存成为分布式缓存）
+
+   Mybatis和所有缓存框架的整合方法：
+   Mybatis提供了一个cache接口，如果要实现自己的缓存逻辑，实现cache接口即可。
+   mybatis和ehcache整合，mybatis和ehcache整合包中提供了cache接口的实现类，mybatis直接调用接口方法即可，操作不同redis的数据结构
+
+   Mybatis整合ehcachebu步骤：
+   1）在mapper.xml中cache标签中 type设置为ehcache的cache接口实现类，mybatis默认实现是PerpetualCache
+   2）添加mybatis-ehcache.jar ,ehcache-core.jar
+   3）在classpath下添加ehcache.xml配置文件
+
+   二级缓存应用场景：
+      对于实时性要求不高的数据，可以用二级缓存缓存起来，通过设置flushinterval刷新间隔，来定时30分钟或者60分钟一次的清除缓存
+   mybatis二级缓存的局限性：
+         我们通过ehcache或redis或memcache对Mybatis的二级缓存进行分布式拓展，确实解决了缓存在多个应用集群中共享的问题，
+      但是，查询仍然是通过Mybatis向缓存或者数据库中查询数据，因此分布式的二级缓存仍然具有mybatis的特点，即缓存区域是按照mapper
+      进行划分，一个商品信息的变更提交后会将商品mapper的所有商品信息全部清空，即mybatis对细粒度的数据级别的缓存做的实现不好。
+      解决这种问题一般是通过在业务层针对需求对数据有针对性的缓存。一个商品信息变更后，只清空该商品的缓存数据，其他商品不变，
+      这个我们可以自己实现缓存，称之为三级缓存。
 
 
-10、mybatis和spring的整合
 
-11、逆向工程，须会用
+
+
+11、mybatis和spring的整合
+
+12、逆向工程，须会用
 
 

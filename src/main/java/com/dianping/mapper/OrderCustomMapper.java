@@ -22,4 +22,7 @@ public interface OrderCustomMapper {
 
     //查询用户购买的商品信息
     public List<User> findUserAndItems() throws Exception;
+
+    //查询订单表，关联查询用户，使用延迟加载查询用户
+    public List<Orders> findOrderUserLazyLoad() throws Exception;
 }

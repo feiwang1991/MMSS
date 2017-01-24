@@ -9,10 +9,15 @@
         <!--里面的property 也是可以定义 作用和resource属性一样，但是这个优先加载,没有才加载resource里面的文件 -->
         <!--不建议使用此方式<property name="jdbc.driver" value="xxxxxx"></property>-->
     </properties>
-    <!--加载全局配置参数
+    <!--加载全局配置参数 开启mybatis的延迟加载功能-->
     <settings>
-        <setting name="" value=""/>
-    </settings>-->
+        <!--开启延迟加载 -->
+        <setting name="lazyLoadingEnabled" value="true"></setting>
+        <!--关闭积极延迟加载，即按照需要加载 -->
+        <setting name="aggressiveLazyLoading" value="false"></setting>
+        <!--开启二级缓存 -->
+        <setting name="cacheEnabled" value="true"></setting>
+    </settings>
     <!-- 定义别名-->
     <typeAliases>
         <!-- 定义单个别名-->
