@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:aop="http://www.springframework.org/schema/aop"
+       xmlns:tx="http://www.springframework.org/schema/tx"
+       xmlns:p="http://www.springframework.org/schema/p"
+       xmlns:util="http://www.springframework.org/schema/util"
+       xmlns:jdbc="http://www.springframework.org/schema/jdbc"
+       xmlns:cache="http://www.springframework.org/schema/cache"
+       xsi:schemaLocation="
+    http://www.springframework.org/schema/context
+    http://www.springframework.org/schema/context/spring-context.xsd
+    http://www.springframework.org/schema/beans
+    http://www.springframework.org/schema/beans/spring-beans.xsd
+    http://www.springframework.org/schema/tx
+    http://www.springframework.org/schema/tx/spring-tx.xsd
+    http://www.springframework.org/schema/jdbc
+    http://www.springframework.org/schema/jdbc/spring-jdbc-3.1.xsd
+    http://www.springframework.org/schema/cache
+    http://www.springframework.org/schema/cache/spring-cache-3.1.xsd
+    http://www.springframework.org/schema/aop
+    http://www.springframework.org/schema/aop/spring-aop.xsd
+    http://www.springframework.org/schema/util
+    http://www.springframework.org/schema/util/spring-util.xsd">
+
+    <!--springcontext加载properties配置文件，用于数据源的使用 -->
+    <context:property-placeholder location="classpath:db.properties" />
+    <bean id="dataSource" class="org.apache.commons.dbcp.BasicDataSource" destroy-method="close">
+        <property name="driverClassName" value="${jdbc.driver}"/>
+        <property name="url" value="${jdbc.url}"/>
+        <property name="username" value="${jdbc.username}"/>
+        <property name="password" value="${jdbc.password}"/>
+        <property name="maxActive" value="10"/>
+        <property name="maxIdle" value="5"/>
+    </bean>
+    <!--配置SqlSessionFactory,使用mybatis-spring中的sqlsessionfactory -->
+    <bean id="sqlSessionFactory" class="org.mybatis.spring.SqlSessionFactoryBean">
+        <!--加载mybatis的sqlmapconfig.xml的配置文件，获取其位置 -->
+        <property name="configLocation" value="mybatis/SqlMapConfig.xml"/>
+        <!--配置数据源 -->
+        <property name="dataSource" ref="dataSource"/>
+    </bean>
+    <!--原始Dao方式：dao的实现类 -->
+    <bean id="userDaoImpl" class="com.dianping.dao.UserDaoImpl">
+        <!--注入sqlsessionfactory,注意不需要显示写set方法，因为dao实现类继承sqlsessionsupport,有该属性和set方法 -->
+        <property name="sqlSessionFactory" ref="sqlSessionFactory" />
+    </bean>
+
+    <!--mapper方式：根据Mapper接口以及sqlsessionfactory，生成特定接口的代理对象
+    mapperInterface:指定特定的需要代理的接口
+    MapperFactoryBean继承了sqlsessiondaosupport,需要注入sqlsessionfactory
+    不用spring的话，是直接自己获取sqlsessionfactory,获取sqlsession,然后获取指定接口的代理对象
+    使用spring的话，是通过专门的spring-mybatis jar包中的代理对象产生类，通过设置sqlsessionfactory和指定接口名称
+    获取代理对象-->
+    <!--这个方法需要针对每一个接口创建一个代理，麻烦
+    <bean id="userMapper" class="org.mybatis.spring.mapper.MapperFactoryBean">
+        <property name="mapperInterface" value="com.dianping.mapper.UserMapper"/>
+        <property name="sqlSessionFactory" ref="sqlSessionFactory"/>
+    </bean> -->
+
+    <!--还有一种常用的，避免每个mapper都创建代理的方式，就是扫描方式，自动创建每个接口的代理对象，并且在spring容器中注册
+     同时遵循规范：mapper.java,mapper.xml的名称一致，且在同一个目录下，自动扫描出来的mapper的bean的ＩＤ即为向容器中注册的代理对象名，
+     默认首字母小写。
+     注意：在mybatis配置文件sqlmapconfig.xml中对mapper.xml文件的扫描可以省去了，统一又spring进行自动管理-->
+    <bean class="org.mybatis.spring.mapper.MapperScannerConfigurer">
+        <!--若扫描多个包，每个包中间用半角逗号隔开 -->
+        <property name="basePackage" value="com.dianping.mapper"/>
+        <property name="sqlSessionFactoryBeanName" value="sqlSessionFactory" />
+    </bean>
+
+
+</beans>

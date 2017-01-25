@@ -23,7 +23,7 @@ public class UserTest {
     public void findUserByIdTest() throws Exception{
         //1 获得SqlSessionFactory
         //  1)获得SqlMapConfig.xml系统配置文件的具体位置，默认在classpath下，即classes下
-        String reource="SqlMapConfig.xml";
+        String reource= "mybatis/SqlMapConfig.xml";
         //  2)把配置文件转为输入流，准备传入sqlsessionfactorybuilder中
         InputStream input = Resources.getResourceAsStream(reource);
         //  3)根据获得的配置文件输入流，利用builder创建sqlsessionfactory
@@ -43,7 +43,7 @@ public class UserTest {
     }
     @Test
     public void findUserByNameTest() throws Exception{
-        String reource="SqlMapConfig.xml";
+        String reource= "mybatis/SqlMapConfig.xml";
         InputStream input = Resources.getResourceAsStream(reource);
         SqlSessionFactory sqlSessionFactory=new SqlSessionFactoryBuilder().build(input);
         SqlSession sqlSession=sqlSessionFactory.openSession();
@@ -57,7 +57,7 @@ public class UserTest {
     }
     @Test
     public void insertUserTest() throws Exception{
-        String reource="SqlMapConfig.xml";
+        String reource= "mybatis/SqlMapConfig.xml";
         InputStream input = Resources.getResourceAsStream(reource);
         SqlSessionFactory sqlSessionFactory=new SqlSessionFactoryBuilder().build(input);
         SqlSession sqlSession=sqlSessionFactory.openSession();
@@ -75,7 +75,7 @@ public class UserTest {
     }
     @Test
     public void deleteUserTest() throws Exception{
-        String reource="SqlMapConfig.xml";
+        String reource= "mybatis/SqlMapConfig.xml";
         InputStream input = Resources.getResourceAsStream(reource);
         SqlSessionFactory sqlSessionFactory=new SqlSessionFactoryBuilder().build(input);
         SqlSession sqlSession=sqlSessionFactory.openSession();
@@ -86,7 +86,7 @@ public class UserTest {
     }
     @Test
     public void updateUserTest() throws Exception{
-        String reource="SqlMapConfig.xml";
+        String reource= "mybatis/SqlMapConfig.xml";
         InputStream input = Resources.getResourceAsStream(reource);
         SqlSessionFactory sqlSessionFactory=new SqlSessionFactoryBuilder().build(input);
         SqlSession sqlSession=sqlSessionFactory.openSession();

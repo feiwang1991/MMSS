@@ -4,12 +4,13 @@
         "http://mybatis.org/dtd/mybatis-3-config.dtd">
 <configuration>
 
-    <!-- 加载属性文件-->
+    <!-- 加载属性文件，这个在和spring整合时，就不需要了，由spring的配置文件进行加载，用于数据源
     <properties resource="db.properties">
-        <!--里面的property 也是可以定义 作用和resource属性一样，但是这个优先加载,没有才加载resource里面的文件 -->
-        <!--不建议使用此方式<property name="jdbc.driver" value="xxxxxx"></property>-->
+        里面的property 也是可以定义 作用和resource属性一样，但是这个优先加载,没有才加载resource里面的文件
+        不建议使用此方式<property name="jdbc.driver" value="xxxxxx"></property>
     </properties>
-    <!--加载全局配置参数 开启mybatis的延迟加载功能-->
+        -->
+    <!--加载全局配置参数 开启mybatis的延迟加载功能(和spring整合后，可以保留，作为mybatis的配置参数)-->
     <settings>
         <!--开启延迟加载 -->
         <setting name="lazyLoadingEnabled" value="true"></setting>
@@ -27,12 +28,12 @@
         <package name="com.dianping.vo"></package>
         <package name="com.dianping.pojo"></package>
     </typeAliases>
-    <!-- 和spring整合后 environments将废除 -->
+    <!-- 和spring整合后 environments将废除
     <environments default="development">
         <environment id="development">
-            <!-- 使用JDBC事务管理，事务控制由mybatis -->
+             使用JDBC事务管理，事务控制由mybatis
             <transactionManager type="JDBC"/>
-            <!-- 数据库连接池，由mybatis -->
+             数据库连接池，由mybatis
             <dataSource type="POOLED">
                 <property name="driver" value="${jdbc.driver}"/>
                 <property name="url" value="${jdbc.url}"/>
@@ -40,7 +41,8 @@
                 <property name="password" value="${jdbc.password}"/>
             </dataSource>
         </environment>
-    </environments>
+    </environments>-->
+
     <!-- SqlMapConfig.xml总配置文件加载mapper.xml配置文件
          注意：resource的路径为classpath为总路径，此处为sqlmap下User.xml-->
     <mappers>
@@ -51,7 +53,8 @@
         不会被编译到classpath下，会报错，解决办法就是在mave-pom.xml-build中添加Java中的xml为可编译-->
        <!--<mapper class="com.dianping.mapper.UserMapper" />-->
         <!--推荐使用：此种批量加载也是很好，使用条件和上面一种条件一致 -->
-        <package name="com.dianping.mapper"></package>
+        <!--和spring整合之后，扫描mapper文件，自动为每一个mapper接口创建代理对象
+         在sqlmapconfig.xml中的这个加载mapper文件可以省去<package name="com.dianping.mapper"></package>-->
     </mappers>
 
 </configuration>

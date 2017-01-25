@@ -1,13 +1,14 @@
 package com.dianping.dao;
 
-import com.dianping.dao.UserDao;
-import com.dianping.dao.UserDaoImpl;
 import com.dianping.po.User;
+import javafx.application.Application;
 import org.apache.ibatis.io.Resources;
 import org.apache.ibatis.session.SqlSessionFactory;
 import org.apache.ibatis.session.SqlSessionFactoryBuilder;
 import org.junit.Before;
 import org.junit.Test;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.support.ClassPathXmlApplicationContext;
 
 import java.io.InputStream;
 import java.util.Date;
@@ -20,20 +21,23 @@ import java.util.Date;
  */
 public class UserDaoImplTest {
 
+    /*使用spring就不用自己获取sqlsessionfactory了，而是直接加载spring容器即可
     private SqlSessionFactory sqlSessionFactory;
     @Before
     public void before() throws Exception {
-        String xml="SqlMapConfig.xml";
+        String xml= "mybatis/SqlMapConfig.xml";
         InputStream input= Resources.getResourceAsStream(xml);
         sqlSessionFactory=new SqlSessionFactoryBuilder().build(input);
-    }
-
+    }*/
+    private ApplicationContext applicationContext;
     /**
      * Method: findUserById(int id)
      */
     @Test
     public void testFindUserById() throws Exception {
-        UserDao userDao = new UserDaoImpl(sqlSessionFactory);
+        //UserDao userDao = new UserDaoImpl(sqlSessionFactory);
+        applicationContext=new ClassPathXmlApplicationContext("spring/applicationContext.xml");
+        UserDao userDao= (UserDao) applicationContext.getBean("userDaoImpl");
         User u=userDao.findUserById(1);
         System.out.println(u);
     }
@@ -41,7 +45,7 @@ public class UserDaoImplTest {
     /**
      * Method: insertUser(User user)
      */
-    @Test
+    /*@Test
     public void testInsertUser() throws Exception {
         UserDao userDao = new UserDaoImpl(sqlSessionFactory);
         User u=new User();
@@ -51,17 +55,17 @@ public class UserDaoImplTest {
         u.setAddress("非洲尼日尼亚3");
         userDao.insertUser(u);
         System.out.println(u.getId());
-    }
+    }*/
 
     /**
      * Method: deleteUserById(int id)
      */
-    @Test
+   /* @Test
     public void testDeleteUserById() throws Exception {
         UserDao userDao = new UserDaoImpl(sqlSessionFactory);
         userDao.deleteUserById(9);
 
-    }
+    }*/
 
 
 } 

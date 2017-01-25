@@ -203,11 +203,38 @@ Tips:
       这个我们可以自己实现缓存，称之为三级缓存。
 
 
-
-
-
 11、mybatis和spring的整合
+    1）整合思路
+      需要spring通过单例的方式管理sqlsessionfactory(这步需要我们自己做)
+      spring和mybatis整合生成代理对象，使用sqlsessionfactory生成sqlsession，然后sqlsession产生代理对象（这步srping和mybatis自动整合完成）
+      持久层的mapper或者dao由spring自动管理（这步我们自己做）
+    2）环境
+       需要mybatis jar包，spring jar包，Mybatis-spring jar包
+    3）sqlsessionfactory
+       在applicationContext.xml配置sqlsessionfactory（需要单例）
+    4）原始dao的开发（和spring整合后）
+       mapper.xml
+          mapper.xml基本保持不变,写相关sql
+       dao(实现类继承SqlSessionSupport)
+          在spring applicationContext中配置Dao实现类，注入我们到dao的实现类中。原来没有使用spring整合时，我们到dao的实现类中写set方法注入sqlsessionfactory
+       sqlsessionfactory,在整合时同样需要注入sqlsessionfactory,但是我们不需要手动写set方法注入，让自己的dao实现类继承sqlsessiondaosupport,
+       这个类有sqlsessionfactory属性和对应的set方法，故我们在配置文件中可以直接注入，不需要再写一次set方法，获取sqlsession时候可以
+       直接this.getSqlSession（原来是要先获取sqlsessionfactory,这里继承的类中直接有这个方法，同时注入了sqlsessionfacotry,
+       由它产生sqlsession）,注意，因为getSqlSession被spring改写过，因此我们不需要显示的关闭进行sqlsession.close()方法。
+       spring会默认调用关闭sqlsession的方法。
+    5）Mappper代理的开发（和spring整合后） 和Dao两种方式都要掌握，都有可能用到
+
 
 12、逆向工程，须会用
+    从数据库表--》自动生成Java相关代码和xml配置文件，这也是企业开发中最常见的逆向工程方式
+    Mybatis官方提供了逆向工程的工具，可以针对单表自动生成mybatis执行所需要的代码，包括mapper.java,mapper.xml,po等等
+
+    工具：mybatis-generator-core
+    1)官网下载zip压缩包后，里面有index网页，可以查看多种使用方式
+      它有很多IDE的插件运行方式，但是推荐使用java程序运行逆向工程，不依赖开发工具
+    2）复制配置文件和java代码创建
+    3）最好新建一个工程进行创建生成，不用自己的工程直接生成，这样危险性高
+
+
 
 

@@ -9,35 +9,40 @@ import org.apache.ibatis.session.SqlSessionFactory;
 import org.apache.ibatis.session.SqlSessionFactoryBuilder;
 import org.junit.Before;
 import org.junit.Test;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.support.ClassPathXmlApplicationContext;
 
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
-
-import static org.junit.Assert.*;
 
 /**
  * created by IntelliJ IDEA
  */
 public class UserMapperTest {
 
-    private SqlSessionFactory sqlSessionFactory;
+    //使用spring之后，slqsessionfactory有spring管理
+    //private SqlSessionFactory sqlSessionFactory;
+    private ApplicationContext applicationContext;
+
     @Before
     public void setUp() throws Exception {
-        String xml="SqlMapConfig.xml";
+       /* String xml= "mybatis/SqlMapConfig.xml";
         InputStream input= Resources.getResourceAsStream(xml);
-        sqlSessionFactory=new SqlSessionFactoryBuilder().build(input);
+        sqlSessionFactory=new SqlSessionFactoryBuilder().build(input);*/
+        applicationContext=new ClassPathXmlApplicationContext("spring/applicationContext.xml");
     }
 
     @Test
     public void testFindUserById() throws Exception {
-        SqlSession sqlSession=sqlSessionFactory.openSession();
-        UserMapper userMapper=sqlSession.getMapper(UserMapper.class);
+        //SqlSession sqlSession=sqlSessionFactory.openSession();
+        //UserMapper userMapper=sqlSession.getMapper(UserMapper.class);
+        UserMapper userMapper= (UserMapper) applicationContext.getBean("userMapper");
         User u=userMapper.findUserById(1);
-        sqlSession.close();
+        //sqlSession.close();spring自动关闭
         System.out.println(u);
     }
-
+/*
     @Test
     public void testFindUserByName() throws Exception {
         SqlSession sqlSession=sqlSessionFactory.openSession();
@@ -98,5 +103,5 @@ public class UserMapperTest {
     @Test
     public void testDeleteUserById() throws Exception {
 
-    }
+    }*/
 }

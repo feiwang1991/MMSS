@@ -13,8 +13,6 @@ import org.junit.Test;
 import java.io.InputStream;
 import java.util.List;
 
-import static org.junit.Assert.*;
-
 /**
  * created by IntelliJ IDEA
  */
@@ -23,7 +21,7 @@ public class OrderCustomMapperTest {
     private SqlSessionFactory sqlSessionFactory;
     @Before
     public void setUp() throws Exception {
-        String xml="SqlMapConfig.xml";
+        String xml= "mybatis/SqlMapConfig.xml";
         InputStream input= Resources.getResourceAsStream(xml);
         sqlSessionFactory=new SqlSessionFactoryBuilder().build(input);
     }
