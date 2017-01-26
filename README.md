@@ -1,4 +1,5 @@
 # MMSS
+一、Mybatis部分
 It is a Demo web-project with maven-mabatis-spring-springMVC in intellij idea.
 
 Tips:
@@ -234,6 +235,37 @@ Tips:
       它有很多IDE的插件运行方式，但是推荐使用java程序运行逆向工程，不依赖开发工具
     2）复制配置文件和java代码创建
     3）最好新建一个工程进行创建生成，不用自己的工程直接生成，这样危险性高
+
+二、springMVC部分
+    springMVC基本流程：
+    用户发起request请求，到springMVC的前端控制器，类似struts2中的filter，springMVC中的前端控制器是DispatcherServlet(接受用户请求，响应)，
+    然后，springMVC中的前端控制器是DispatcherServlet告诉处理器映射器(HandlerMapping)，让它根据请求的url把请求交给对应的Handler处理器
+    （平常我们叫做controller），具体对应的方式，可能是根据xml文件配置的方式查找URL对应的Handler,处理器映射器找到了之后，向DispatcherServlet
+    返回一个执行链HandlerExecutionChain.这个是一个封装对象，里面封装了前后许多HandlerInterceptor还有指定的Handler。 然后前端控制器
+    请求处理器适配器HandlerAdapter去执行Handler,Handler执行完给处理器适配器返回ModelAndView，处理器适配器再把
+    ModelAndView（ModelAndView是springMVC的底层对象）交给前端控制器；然后前端控制器请求视图解析器(ViewResolver)
+    去解析得到的ModelAndView，根据逻辑视图名解析成真正的视图（jsp,pdf,excel,freemaker），然后把视图向前端控制器返回，前端控制器
+    对视图进行渲染，视图渲染将模型数据（在ModelAndView对象中）填充到request域，最后有前端控制器response相应用户。
+
+    组件：
+    1、前端控制器DispatcherServlet（一般不需要程序员开发）
+       作用接受请求，响应结果，相当于转发器
+       有了DispatcherServlet就减少了其他组件之间的耦合性
+    2、处理器映射器HandlerMapping （不需要程序员要开发）
+       作用根据请求的url查找Handler,xml或者注解
+    3、处理器Handler
+    4、处理器适配器HandlerAdapter
+       作用按照特定的规则（HandlerAdapter要求的规则）去执行Handler
+       注意：编写Handler时候，要按照HandlerAdapter的要求去做，这样适配器才可以正确的执行Handler
+    5、视图解析器View Resolver   （不需要程序员要开发）
+       作用进行视图解析，根据逻辑视图名解析成真正的视图（View）
+    6、视图View
+       View是一个接口，实现类支持不同的实现类型(jsp,freemaker,pdf)
+
+    环境准备：
+    加入spring所有jar包，一定要加入spring-webmvc包
+
+
 
 
 
