@@ -264,6 +264,22 @@ Tips:
 
     环境准备：
     加入spring所有jar包，一定要加入spring-webmvc包
+    步骤：
+    1、配置前端控制器
+    在web.xml中配置前端控制器，这个是一个servlet
+    同时需要在web.xml中初始化时，加载一些初始化参数，这些参数指明需要同时加载的处理器映射器、适配器的具体配置文件地址。
+    2、配置处理器适配器
+    在classpath下的springmvc.xml中配置处理器映射器，处理器适配器，视图解析器，这三个器的配置都在springmvc.xml中。
+    先配置哪个没有固定顺序，但是逻辑上，最好先配置处理器适配器，适配器定义好规则之后，配置处理器
+    观察适配器原码发现，适配器能够适配实现了Controller接口的处理器
+    3、编写处理器Handler
+    Handler需要实现Controller接口才能由SimpleControllerHandlerAdapter处理器适配器执行
+    4、视图的编写
+    就是写jsp页面
+    5、配置处理器映射器
+    6、配置处理器Handler，都比较简单，参考实际代码
+    7、我们这里使用jsp，故要配置jsp的视图解析器
+
 
 
 
