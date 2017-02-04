@@ -279,6 +279,63 @@ Tips:
     5、配置处理器映射器
     6、配置处理器Handler，都比较简单，参考实际代码
     7、我们这里使用jsp，故要配置jsp的视图解析器
+    -----
+    8、 非注解处理器映射器，适配器：
+      8.1下面是非注解的处理器映射器（beanname方式）
+     <bean class="org.springframework.web.servlet.handler.BeanNameUrlHandlerMapping" />
+     非注解处理器映射器（简单URL映射）
+      8.2<!--简单url映射-->
+         <bean class="org.springframework.web.servlet.handler.SimpleUrlHandlerMapping">
+             <property name="mappings">
+                 <props>
+                     <!--key就是url,value就是处理器的ID,可以多个url对应同一个handler -->
+                     <prop key="/queryItems1.action">itemsController1</prop>
+                     <prop key="/queryItems2.action">itemsController1</prop>
+                 </props>
+             </property>
+         </bean>
+      配置文件中可以同时出现多个处理器映射器，springmvc能让传进来的url给谁处理就让哪个处理器映射器处理
+      8.3非注解的处理器适配器
+       <!--配置处理器适配器，要求编写的Handler实现Controller接口-->
+          <bean class="org.springframework.web.servlet.mvc.SimpleControllerHandlerAdapter" />
+       <!--另一个非注解处理器适配器，要求编写的Handler实现HHttpRequestHandler接口
+           注意两种适配器都可以使用，实现要求编写的Handler实现HHttpRequestHandler接口
+           的Handler相当于另外一种struts2的action-->
+           <bean class="org.springframework.web.servlet.mvc.HttpRequestHandlerAdapter"/>
+            //使用此方式可以通过response修改响应数据格式，比如相应json数据
+                   /*httpServletResponse.setCharacterEncoding("utf-8");
+                   httpServletResponse.setContentType("application/json;charset=utf-8");
+                   httpServletResponse.getWriter().write("json串");*/
+      9 配置注解适配器、映射器
+          9.1 DispatcherServlet.properties
+              这个文件是在springmvc的jar包中的配置文件，里面配置了springmvc默认的处理器映射器，适配器以及视图解析器
+              因此，即使在xml中不进行配置以上几种，仍然是可以起作用。
+              其中在该文件中关于处理器映射器的配置中，
+              org.springframework.web.servlet.mvc.annotation.DefaultAnnotationHandlerMapping，这个注解处理器是spring3.1之前的
+              默认注解方式处理器映射器，因此如果我们不设置的话，使用的就是过期的处理器映射器
+              org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerMapping是3.1之后的注解方式处理器映射器
+              ---
+              3.1之前使用的默认注解适配器是：
+              org.springframework.web.servlet.mvc.annotation.AnnotationMethodHandlerAdapter
+              3.1之后使用的默认注解适配器是：
+              org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerAdapter
+           9.2配置注解适配器、映射器
+              <!--注解处理器映射器 -->
+              <bean class="org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerMapping"/>
+              <!--注解处理器适配器 -->
+              <bean class="org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerAdapter"/>
+              <!--springmvc还提供了非常方面的功能，即使用mvc:annotation-driven就可以代替上面2个注解类
+               同时mvc:annotation-driven还默认加载了很多参数绑定方法，比如json转换解析器就默认加载了
+               故使用mvc:annotation-driven的话就不需要配置上面两个，实际开发也用这个-->
+              <mvc:annotation-driven></mvc:annotation-driven>
+
+           注意：注解的映射器和适配器必须配对使用
+            context:component-scan可以扫描controller service repository注解的类，直接在spring容器中进行注册
+            <context:component-scan base-package="com.dianping.controller"/>
+
+
+
+
 
 
 

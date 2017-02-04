@@ -11,7 +11,7 @@ import java.util.Date;
 import java.util.List;
 
 /**
- *商品的Handler
+ *商品的Handler,实现Controller接口，返回modelandview类型
  *author：王斐
  *create：2017-02-03  15:42
  */
