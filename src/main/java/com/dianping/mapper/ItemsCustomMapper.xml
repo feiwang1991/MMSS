@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.dianping.mapper.ItemsCustomMapper">
+   <!-- 一般逆向生成的mapper.java 和mapper.xml文件只能用户单表查询，通常我们需要自定义mapper
+   parameterType:一般使用从表示层传递过来的查询条件包装类，里面包含items扩展类和原始类，方便进行拓展
+   resultType:最好使用继承逆向生成的拓展类用户返回，方便拓展
+   -->
+    <sql id="findItems">
+      <if test="itemsCustom!=null">
+          <if test="itemsCustom.name!=null and itemsCustom.name!=''">
+              NAME LIKE '%${itemsCustom.name}%'
+          </if>
+      </if>
+
+    </sql>
+    <select id="findItemsList" parameterType="com.dianping.po.ItemsQueryVo" resultType="com.dianping.po.ItemsCustom">
+        SELECT items.* FROM items
+        <where>
+            <!--因为一个相同的条件可能很多地方会用到，比如分页时候查询该条件下的count时，因此需要放到公共的sql片段中
+             最好在sql片段中做一个动态sql拼接，这样只要是对这个表的其他条件操作都可以重用-->
+            <include refid="findItems"/>
+        </where>
+    </select>
+</mapper>
+
+
+

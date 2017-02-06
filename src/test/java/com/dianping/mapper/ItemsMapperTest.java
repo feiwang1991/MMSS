@@ -9,8 +9,6 @@ import org.springframework.context.support.ClassPathXmlApplicationContext;
 
 import java.util.List;
 
-import static org.junit.Assert.*;
-
 /**
  * created by IntelliJ IDEA
  */

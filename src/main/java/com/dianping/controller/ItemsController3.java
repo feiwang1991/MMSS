@@ -46,7 +46,8 @@ public class ItemsController3 {
         ModelAndView modelAndView = new ModelAndView();
         //这个方法类似request中的setAttrabute()
         modelAndView.addObject("itemsList", itemsList);
-        modelAndView.setViewName("/WEB-INF/jsp/items/itemsList.jsp");
+        //这里是在视图解析器中配置了路径的前缀和后缀，方面写，当然也可以写完整的路径/WEB-INF/jsp/items/itemsList.jsp
+        modelAndView.setViewName("items/itemsList");
         return modelAndView;
 
     }

@@ -3,71 +3,70 @@
        xmlns:context="http://www.springframework.org/schema/context"
        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
        xmlns:mvc="http://www.springframework.org/schema/mvc"
-       xmlns:aop="http://www.springframework.org/schema/aop"
-       xmlns:tx="http://www.springframework.org/schema/tx"
-       xmlns:p="http://www.springframework.org/schema/p"
-       xmlns:util="http://www.springframework.org/schema/util"
-       xmlns:jdbc="http://www.springframework.org/schema/jdbc"
-       xmlns:cache="http://www.springframework.org/schema/cache"
        xsi:schemaLocation="
     http://www.springframework.org/schema/context
     http://www.springframework.org/schema/context/spring-context.xsd
     http://www.springframework.org/schema/beans
     http://www.springframework.org/schema/beans/spring-beans.xsd
-    http://www.springframework.org/schema/tx
-    http://www.springframework.org/schema/tx/spring-tx.xsd
-    http://www.springframework.org/schema/jdbc
-    http://www.springframework.org/schema/jdbc/spring-jdbc-3.1.xsd
-    http://www.springframework.org/schema/cache
-    http://www.springframework.org/schema/cache/spring-cache-3.1.xsd
-    http://www.springframework.org/schema/aop
-    http://www.springframework.org/schema/aop/spring-aop.xsd
-    http://www.springframework.org/schema/util
-    http://www.springframework.org/schema/util/spring-util.xsd
     http://www.springframework.org/schema/mvc
-    http://www.springframework.org/schema/util/spring-mvc.xsd">
+    http://www.springframework.org/schema/mvc/spring-mvc.xsd ">
 
     <!--Handler处理器的配置 要求实现Controller接口
     使用beanname方式进行映射时候，不需要写id-->
-    <bean id="itemsController1" name="/queryItems_test.action" class="com.dianping.controller.ItemsController1">
-    </bean>
+    <!--<bean id="itemsController1" name="/queryItems_test.action" class="com.dianping.controller.ItemsController1" />-->
+
     <!--另一个实现HttpRequestHander接口的处理器 -->
-    <bean id="itemsController2" class="com.dianping.controller.ItemsController2"/>
+    <!--<bean id="itemsController2" class="com.dianping.controller.ItemsController2"/>-->
     <!-- 配置处理器映射器，
     将bean的name作为url进行查找，需要在配置Handler时候，指定beanname(就是url)-->
-    <bean class="org.springframework.web.servlet.handler.BeanNameUrlHandlerMapping"/>
+    <!--<bean class="org.springframework.web.servlet.handler.BeanNameUrlHandlerMapping"/>-->
     <!--简单url映射-->
-    <bean class="org.springframework.web.servlet.handler.SimpleUrlHandlerMapping">
-        <property name="mappings">
-            <props>
-                <!--key就是url,value就是处理器的ID,可以多个url对应同一个handler -->
-                <prop key="/queryItems1.action">itemsController1</prop>
-                <prop key="/queryItems2.action">itemsController1</prop>
-                <prop key="/queryItems3.action">itemsController2</prop>
-            </props>
-        </property>
-    </bean>
+    <!--<bean class="org.springframework.web.servlet.handler.SimpleUrlHandlerMapping">-->
+        <!--<property name="mappings">-->
+            <!--<props>-->
+                <!--&lt;!&ndash;key就是url,value就是处理器的ID,可以多个url对应同一个handler &ndash;&gt;-->
+                <!--<prop key="/queryItems1.action">itemsController1</prop>-->
+                <!--<prop key="/queryItems2.action">itemsController1</prop>-->
+                <!--<prop key="/queryItems3.action">itemsController2</prop>-->
+            <!--</props>-->
+        <!--</property>-->
+    <!--</bean>-->
     <!--配置非注解处理器适配器，要求Handler实现Controller接口-->
-    <bean class="org.springframework.web.servlet.mvc.SimpleControllerHandlerAdapter"/>
+    <!--<bean class="org.springframework.web.servlet.mvc.SimpleControllerHandlerAdapter"/>-->
     <!--另一个非注解处理器适配器，要求编写的Handler实现HHttpRequestHandler接口
     注意两种适配器都可以使用，实现要求编写的Handler实现HHttpRequestHandler接口
     的Handler相当于另外一种struts2的action-->
-    <bean class="org.springframework.web.servlet.mvc.HttpRequestHandlerAdapter"/>
+    <!--<bean class="org.springframework.web.servlet.mvc.HttpRequestHandlerAdapter"/>-->
 
     <!--注解处理器映射器 -->
-    <bean class="org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerMapping"/>
+    <!--<bean class="org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerMapping"/>-->
     <!--注解处理器适配器 -->
-    <bean class="org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerAdapter"/>
+    <!--<bean class="org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerAdapter"/>-->
     <!--springmvc还提供了非常方面的功能，即使用mvc:annotation-driven就可以代替上面2个注解类
      同时mvc:annotation-driven还默认加载了很多参数绑定方法，比如json转换解析器就默认加载了
      故使用mvc:annotation-driven的话就不需要配置上面两个，实际开发也用这个-->
-    <!--<mvc:annotation-driven></mvc:annotation-driven>-->
 
+    <mvc:annotation-driven conversion-service="conversionService"/>
     <!--context:component-scan可以扫描controller service repository注解的类，直接在spring容器中进行注册-->
-    <context:component-scan base-package="com.dianping.controller">
-
-    </context:component-scan>
+    <context:component-scan base-package="com.dianping.controller" />
 
     <!--配置视图解析器，默认使用jstl进行配置 -->
-    <bean class="org.springframework.web.servlet.view.InternalResourceViewResolver"/>
+    <bean class="org.springframework.web.servlet.view.InternalResourceViewResolver">
+        <!--配置具体JSP路径的前缀和后缀，方面在serViewName时候简写-->
+        <property name="prefix" value="/WEB-INF/jsp/"/>
+        <property name="suffix" value=".jsp"/>
+    </bean>
+    <!-- spring mvc如果要接收 multipart/form-data 传输的post方式提交的数据，应该在spring上下文配置-->
+    <bean id="multipartResolver" class="org.springframework.web.multipart.commons.CommonsMultipartResolver">
+    </bean>
+    <!-- 自定义url->对象，转换器
+    需要把在input中的一定格式的时间字符串，转换成数据库中，Java Date对象
+    如果不转换时间的话，springmvc运行时候会报错，报错string到date无法转换错误-->
+    <bean id="conversionService" class="org.springframework.format.support.FormattingConversionServiceFactoryBean">
+        <property name="converters">
+            <list>
+                <bean class="com.dianping.controller.convert.CusomDateConverter"/>
+            </list>
+        </property>
+    </bean>
 </beans>

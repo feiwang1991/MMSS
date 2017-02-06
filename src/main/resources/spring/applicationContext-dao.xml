@@ -34,10 +34,11 @@
         <property name="maxActive" value="10"/>
         <property name="maxIdle" value="5"/>
     </bean>
+
     <!--配置SqlSessionFactory,使用mybatis-spring中的sqlsessionfactory -->
     <bean id="sqlSessionFactory" class="org.mybatis.spring.SqlSessionFactoryBean">
         <!--加载mybatis的sqlmapconfig.xml的配置文件，获取其位置 -->
-        <property name="configLocation" value="mybatis/SqlMapConfig.xml"/>
+        <property name="configLocation" value="classpath:mybatis/SqlMapConfig.xml"/>
         <!--配置数据源 -->
         <property name="dataSource" ref="dataSource"/>
     </bean>

@@ -332,6 +332,57 @@ Tips:
            注意：注解的映射器和适配器必须配对使用
             context:component-scan可以扫描controller service repository注解的类，直接在spring容器中进行注册
             <context:component-scan base-package="com.dianping.controller"/>
+      10、原码分析
+         看前端控制器，分析springMVC的执行过程
+         1）前端控制器接收请求，调用doDispatch方法，对请求进行处理，入参是httpservletrequest,httpservletresponse，返回空
+         2) 前端控制器，调用处理器映射器查找handler，调用HandlerExecutionChain方法，入参是httpservletrequest,返回handler执行链
+         3）前端控制器调用前置的拦截器，然后调用处理器适配器去执行handler，利用适配器的handle方法，入参request,respons,以及查到的handler
+            返回modelAndView,之后前端控制器执行后面的拦截器
+         4）视图渲染
+            调用视图处理器，首先获得view,根据modelandview中的view名字获得view,这里是jsp页面，然后调用view的渲染方法，把model（是个map）
+            中的值设置到request中去，等到对jsp文件进行解释成java类（内含el表达式对象）之后，若jsp中有el表达式，则表达式对象就从最小的
+            request域开始，找到就把属性值out.println到html输出流中
+      11、springMVC和mybatis整合
+          spring将各层进行整合
+          通过spring管理持久层的mapper(相当于dao接口)
+          通过Spring管理业务层service,service中可以调用Mapper接口，可以对service进行事物控制
+          通过spring管理表现层handler,handler中可以调用service接口
+          mapper的代理对象(spring配置文件中产生，传入sessionfactory和扫描的mapper包),service对象，handler对象都是Javabean
+        第一步：整合dao层
+         mybatis和spring整合，通过spring管理Mapper接口，使用Spring的扫描器自动扫描mappe接口在spring中进行注册
+        第二步：管理service层
+         通过spring管理service接口，可以通过注解@service或者通过声明式的方式在配置文件中配置
+         实现事务控制，一般事务控制是在service中完成
+        第三步：整个springMVC
+         springMVC是spring的模块，不需要整合，在没有Springmvc时候，我们使用spring是通过单元测试中加载applicationConfig.xml
+         配置文件，加上jar包，对springMVC容器进行启动，在springmvc时候，启动入口改为web,故需要在web.xml中配置springmvc
+         的前端控制器，也就是最终要的servlet，并且把springmvc的配置文件位置作为初始化参数进行加载，同时在web.xml中对
+         spring的配置文件进行加载，从而启动spring容器，在spring容器启动时候会在配置文件中
+         同时加载mybatis(配置了mybatis配置文件的位置)
+    12、参数绑定
+       从客户端请求的key-value数据，经过springmvc参数绑定，绑定到controller方法形参上，即springmvc中，接受客户端
+       传递进来的参数主要是靠方法形参，而不是类似struts2中的在controller方法的成员变量中定义
+
+       处理器适配器通过参数绑定组件把key-value数据转换成controller方法的形参，其中Springmvc提供了很多这种组件叫converter
+       一般情况不需要我们自定义，但是有时候也是需要，比如对日期数据的需求。
+
+       参数绑定默认支持的类型，即在controller方法的形参的类型，我们可以自己定义随便用：
+       httpservletrequest,httpservletresponse,httpsession,model/modelMap (model是接口，modelmap是他的接口实现，定义哪一个都可以)
+       同样支持简单类型，即在方法形参中定义简单int之类的类型，
+       若不使用注解@RequestParam,controller方法形参默认名称和传入url中参数名称一致
+       若使用注解@RequestParam,不用限制controller方法形参默认名称和传入url中参数名称一致
+
+       如果controller形参pojo中有时间属性，那么需要对传入的时间进行自定义绑定
+       目标是把输入参数绑定输出成和数据库匹配的时间类型
+       需要向处理器适配器中注入自定义绑定组件
+
+
+
+
+
+
+
+
 
 
 
