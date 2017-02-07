@@ -4,10 +4,14 @@ package com.dianping.controller;/**
 
 import com.dianping.po.Items;
 import com.dianping.po.ItemsCustom;
+import com.dianping.po.ItemsQueryVo;
 import com.dianping.service.ItemsCustomService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.validation.BindingResult;
+import org.springframework.validation.ObjectError;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -38,11 +42,12 @@ public class ItemsCustomController {
     //@RequestParam 不加的时候，默认形参和url中参数必须匹配
     //@RequestParam 加的时候,value表示request中的名称，required表示是否在request中是必须的，defaultValue表示默认值
     //public ModelAndView findItemsList(HttpServletRequest httpServletRequest ,int id ) throws Exception {
-    public ModelAndView findItemsList(@RequestParam(value = "id",required = true,defaultValue ="1") int item_id ) throws Exception {
+    //public ModelAndView findItemsList(@RequestParam(value = "id",required = true,defaultValue ="1") int item_id ) throws Exception {
+    public ModelAndView findItemsList(HttpServletRequest request,ItemsQueryVo itemsQueryVo) throws Exception {
         //测试转发过来，request是否保留第一次请求时候的数据
-        System.out.println(item_id);
+        //System.out.println(item_id);
         //System.out.println(httpServletRequest.getAttr ibute("id"));
-        List<ItemsCustom> itemsList = itemsCustomService.findItemsList(null);
+        List<ItemsCustom> itemsList = itemsCustomService.findItemsList(itemsQueryVo);
         ModelAndView modelAndView = new ModelAndView();
         //这个方法类似request中的setAttrabute()
         modelAndView.addObject("itemsList", itemsList);
@@ -94,12 +99,47 @@ public class ItemsCustomController {
     //提交id修改商品信息
     //注意，传输pojo数据时候，表单中name必须和controller形参pojo的属性名称一致才可以顺利传入
     //若有重复的id，也是可以传入
+    //在需要校验的Pojo前面添加@Validated,在需要添加校验的pojo后面添加BindingResult，用户接受校验后的出错的提示信息
+    //注意上面两个校验@Validated和BindingResult必须同时出现，且顺序一前一后固定
     @RequestMapping(value = "/editItemSubmit")
-    public String editItemSubmit(HttpServletRequest httpServletRequest,Integer id,ItemsCustom itemsCustom) throws Exception {
-
+    public String editItemSubmit(Model model,HttpServletRequest httpServletRequest,Integer id,
+                                 @Validated ItemsCustom itemsCustom ,BindingResult bindingResult) throws Exception {
+        if(bindingResult.hasErrors()){
+            List<ObjectError> objectErrors=bindingResult.getAllErrors();
+            for (ObjectError objectError : objectErrors) {
+                System.out.println(objectError.getDefaultMessage());
+            }
+            //校验到错误之后，需要把错误信息传递到前端页面，可以通过model来传递参数,并继续返回编辑页面，同时显示错误
+            model.addAttribute("objectErrors", objectErrors);
+            return "items/editItems";
+        }
         itemsCustomService.updateItemsById(id,itemsCustom);
         //return "redirect:findItemsList.action";
         //return "forward:findItemsList.action";//注意这里也是写配置的根路径下面的路径，注意这里不写/
+        return "items/success";
+    }
+    //注意：这里使用数组进行传参数，进行批量删除，checkbox里面的name都是一样的，都是itemsId，这样才好映射到同一个数组中
+    @RequestMapping("/deleteItems")
+    public String deleteItems(HttpServletRequest httpServletRequest,Integer[] itemsId)throws Exception{
+        //调用service删除
+        return "items/success";
+    }
+    //进入商品修改页面
+    @RequestMapping("/editItemQuery")
+    public ModelAndView editItemQuery(HttpServletRequest request) throws Exception {
+        List<ItemsCustom> itemsList = itemsCustomService.findItemsList(null);
+        ModelAndView modelAndView = new ModelAndView();
+        modelAndView.addObject("itemsList", itemsList);
+        modelAndView.setViewName("items/editItemQuery");
+        return modelAndView;
+    }
+    //提交所有商品
+    //注意：传递list参数对所有商品进行修改提交的时候,list一定要被包含在包装类(vo)中,只有这样，才好在页面中
+    //对每个Input标签的name使用 list[i].name  list[i].price等等
+    //传入map形式的参数和List类似，也是在包装类中加入map，在页面上使用<input type="text" name="map['name']" value="${xxx}"/>就可以映射
+    @RequestMapping("/editItemAllSubmit")
+    public String editItemAllSubmit(ItemsQueryVo itemsQueryVo) throws Exception {
+
         return "items/success";
     }
 

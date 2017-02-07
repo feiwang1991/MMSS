@@ -13,6 +13,11 @@
     <title>商品修改页面</title>
 </head>
 <body>
+<c:if test="${objectErrors!=null}">
+    <c:forEach items="${objectErrors}" var="error">
+        ${error.defaultMessage}
+    </c:forEach>
+</c:if>
 <%--enctype="multipart/form-data"这种方式会导致Post方式提交时候，服务端获取不到数据
   需要在spring配置文件中配置<bean id="multipartResolver" class="org.springframework.web.multipart.commons.CommonsMultipartResolver">
 </bean> 参考http://blog.csdn.net/xulianboblog/article/details/51660835

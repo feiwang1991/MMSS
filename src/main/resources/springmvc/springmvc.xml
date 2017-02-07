@@ -46,7 +46,8 @@
      同时mvc:annotation-driven还默认加载了很多参数绑定方法，比如json转换解析器就默认加载了
      故使用mvc:annotation-driven的话就不需要配置上面两个，实际开发也用这个-->
 
-    <mvc:annotation-driven conversion-service="conversionService"/>
+    <mvc:annotation-driven conversion-service="conversionService"
+            validator="validator"/>
     <!--context:component-scan可以扫描controller service repository注解的类，直接在spring容器中进行注册-->
     <context:component-scan base-package="com.dianping.controller" />
 
@@ -68,5 +69,25 @@
                 <bean class="com.dianping.controller.convert.CusomDateConverter"/>
             </list>
         </property>
+    </bean>
+    <!-- 设置校验器-->
+    <bean id="validator" class="org.springframework.validation.beanvalidation.LocalValidatorFactoryBean">
+        <!-- 指定校验器提供商-->
+        <property name="providerClass" value="org.hibernate.validator.HibernateValidator"/>
+        <!-- 指定校验使用的错误配置，如果不指定，则使用默认的classpath下的ValidationMessages.properties-->
+        <property name="validationMessageSource" ref="messageSource"/>
+    </bean>
+    <bean id="messageSource" class="org.springframework.context.support.ReloadableResourceBundleMessageSource">
+        <!-- 指定的资源文件名，因为是basename，所以省略.properties后缀-->
+        <property name="basenames">
+            <list>
+                <value>classpath:CustomValidationMessages</value>
+            </list>
+        </property>
+        <!-- 资源文件编码格式-->
+        <property name="fileEncodings" value="utf-8"/>
+        <!-- 对资源文件的内容的缓存时间，单位秒-->
+        <property name="cacheSeconds" value="120"/>
+
     </bean>
 </beans>
