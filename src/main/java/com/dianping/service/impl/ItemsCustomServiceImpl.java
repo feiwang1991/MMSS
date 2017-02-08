@@ -2,6 +2,7 @@ package com.dianping.service.impl;/**
  * created by IntelliJ IDEA
  */
 
+import com.dianping.exception.CustomException;
 import com.dianping.mapper.ItemsCustomMapper;
 import com.dianping.mapper.ItemsMapper;
 import com.dianping.po.Items;
@@ -34,6 +35,11 @@ public class ItemsCustomServiceImpl implements ItemsCustomService {
     public ItemsCustom findItemsById(Integer id) throws Exception {
         //注意在根据id查询商品时候，先验证id是否为空，为空需要抛出异常，这是良好的编码习惯
         Items items=itemsMapper.selectByPrimaryKey(id);
+        //一般dao层不进行异常处理，查到什么就是什么，一般和业务相关的异常，是在service中进行判断
+        // 在此处决定是否要抛出异常，比如此处查不到的话就需要抛出异常
+        if(items==null){
+            throw new CustomException("商品信息不存在！");
+        }
         //为了展示效果更过些，通常需要使用拓展的ItemsCustom类进行传输展示，使用spring自带的属性复制工具类
         ItemsCustom itemsCustom=new ItemsCustom();
         BeanUtils.copyProperties(items,itemsCustom);

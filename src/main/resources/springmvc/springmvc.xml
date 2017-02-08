@@ -57,8 +57,13 @@
         <property name="prefix" value="/WEB-INF/jsp/"/>
         <property name="suffix" value=".jsp"/>
     </bean>
-    <!-- spring mvc如果要接收 multipart/form-data 传输的post方式提交的数据，应该在spring上下文配置-->
+    <!-- 这个是springmvc对multipart类型数据的解析器
+    spring mvc如果要接收 multipart/form-data 传输的post方式提交的数据，应该在spring上下文配置，否则服务端接收不到参数，
+    即如果表单为multipart类型，必须配置解析器-->
     <bean id="multipartResolver" class="org.springframework.web.multipart.commons.CommonsMultipartResolver">
+        <property name="maxUploadSize">
+            <value>5242880</value>
+        </property>
     </bean>
     <!-- 自定义url->对象，转换器
     需要把在input中的一定格式的时间字符串，转换成数据库中，Java Date对象
@@ -90,4 +95,6 @@
         <property name="cacheSeconds" value="120"/>
 
     </bean>
+    <!-- 在springMVC中配置注册全局的异常处理器，注意这里即使写2个，也只会用第一个-->
+    <bean class="com.dianping.exception.CustomExceptionResolver"/>
 </beans>

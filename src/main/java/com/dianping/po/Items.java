@@ -1,5 +1,8 @@
 package com.dianping.po;
 
+import com.dianping.controller.Validator.ValidatorGroup1;
+import com.dianping.controller.Validator.ValidatorGroup2;
+
 import javax.validation.*;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
@@ -9,14 +12,15 @@ public class Items {
 //    自动生成的mapper.xml文件，只能用户对items的单表查询，通常我们需要自定义mapper.java和mapper.xml
     private Integer id;
     //校验从页面传进的controller的items的name的字符长度
-    @Size(min = 1,max = 10,message = "{items.name.length.error}")
+    //groups表示这个属性的规则是属于哪个分组的，注意一个规则可以属于多个分组
+    @Size(min = 1,max = 10,message = "{items.name.length.error}",groups = {ValidatorGroup1.class})
     private String name;
 
     private Float price;
 
     private String pic;
     //校验从页面传进controller的items的createtime是否为空
-    @NotNull(message = "{items.createtime.notnull}")
+    @NotNull(message = "{items.createtime.notnull}",groups = {ValidatorGroup2.class})
     private Date createtime;
 
     private String detail;
