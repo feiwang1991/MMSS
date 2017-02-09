@@ -43,14 +43,30 @@
     </servlet>
     <servlet-mapping>
         <servlet-name>springmvc</servlet-name>
-        <!--url映射有几种方法：
+        <!--url映射有几种方法：注意可以同时配置多个web映射方式
          1、*.action,以.action结尾的url都由springmvc DispatcherServlet进行解析
-         2、/,所有访问地址都由DispatcherServlet进行解析进行解析，对于静态文件的解析配置不让DispatcherServlet进行解析
+         2、/,所有访问地址都由DispatcherServlet进行解析进行解析，但是对于静态文件，让DispatcherServle不会进行解析，因为没有映射
+         因此使用这种方式需要在springmvc的配置文件中单独对静态资源进行配置
          此种方式可以实现RESTful风格的url
          3、/*，这样的配置不对，使用这种配置，最终要转发到一个jsp页面时候，仍然由DispatcherServlet进行解析jsp地址,不能根据jsp页面找到
          handler
          -->
         <url-pattern>*.action</url-pattern>
+    </servlet-mapping>
+
+    <servlet>
+        <!--springmvc 前端控制器 -->
+        <servlet-name>springmvc-RESTful</servlet-name>
+        <servlet-class>org.springframework.web.servlet.DispatcherServlet</servlet-class>
+        <init-param>
+            <param-name>contextConfigLocation</param-name>
+            <param-value>classpath:springmvc/springmvc.xml</param-value>
+        </init-param>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>springmvc-RESTful</servlet-name>
+
+        <url-pattern>/</url-pattern>
     </servlet-mapping>
 
 </web-app>

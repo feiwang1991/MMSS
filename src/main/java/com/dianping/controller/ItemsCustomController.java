@@ -12,9 +12,7 @@ import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.ObjectError;
 import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.multipart.MultipartFile;
 import javax.servlet.http.HttpServletRequest;
@@ -173,6 +171,14 @@ public class ItemsCustomController {
     public String editItemAllSubmit(ItemsQueryVo itemsQueryVo) throws Exception {
 
         return "success";
+    }
+
+    //RESTful风格的测试,参数直接放在url中,以json格式向前端反馈，注意json形式的返回值是可以直接返回到发送的页面的
+    //@PathVariable("id")，表示url路径中的id，对应形参中的变量
+    @RequestMapping(value = "/itemsView/{id}")
+    public @ResponseBody ItemsCustom itemsView(@PathVariable("id") Integer itemsId) throws  Exception{
+        ItemsCustom itemsCustom=itemsCustomService.findItemsById(itemsId);
+        return itemsCustom;
     }
 
 }

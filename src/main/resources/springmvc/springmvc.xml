@@ -48,6 +48,8 @@
 
     <mvc:annotation-driven conversion-service="conversionService"
             validator="validator"/>
+    <!-- 对静态资源进行配置，因为前段控制器不能够对静态资源进行正常映射-->
+    <mvc:resources mapping="/javascript/**" location="/javascript/" />
     <!--context:component-scan可以扫描controller service repository注解的类，直接在spring容器中进行注册-->
     <context:component-scan base-package="com.dianping.controller" />
 
@@ -97,4 +99,7 @@
     </bean>
     <!-- 在springMVC中配置注册全局的异常处理器，注意这里即使写2个，也只会用第一个-->
     <bean class="com.dianping.exception.CustomExceptionResolver"/>
+    <!-- springMVC默认使用MappingJacksonHttpMessageConverter对json数据进行转换，需要加入jakson包
+    @RequestBody和@ResponseBody就是使用jackson-core和jackson-mapper进行json转换
+    需要在配置文件中配置一个json交互的处理器适配器，但是如果使用mvc:annotation-driven的话就不需要配置-->
 </beans>

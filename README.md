@@ -434,6 +434,24 @@ Tips:
    在电商的正式项目中，一般会有一台专门的图片服务器，这里我们使用tomcat即作为应用服务器也作为图片服务器
    在tomcat中建立一个虚拟目录，专门用于存放图片。注意数据库中的图片存放放的是图片的名称
 
+   20、json
+     1)请求json，输出json,所以在前端页面中需要将请求的内容转成json,不太方便
+     但是有的前端框架即使基于json的，比如ext，因此我们自己写的时候，就使用普通的key-value数据即可
+     2）请求的是key-value,输出的是json,这也是常用也是我们推荐的
+     @RequestBody把json串转换为java对象
+     @ResponseBody把java对象转换成json串
+
+   21、RESTful软件架构
+     这是一个开发理念，是对http的很好的诠释
+      1、对url进行规范，写RESTful格式的URL
+         非RESTful格式的url: http://..../queryItems.action?id=1&type=t1
+         RESTful风格的url: http://..../items/1
+         特点：url简单，将参数通过url传递到服务端
+      2、不管是删除、添加、还是更新、使用的url都是一样的，如果进行删除，需要设置http方法为delete,同理添加
+         后台controller方法，判断http的方法，如果是delete执行删除，如果是post，执行添加
+      3、对http的contentType进行规范
+         请求时候，指定contentType,要json数据，设置成json格式的Type
+
 
 
 
