@@ -451,6 +451,10 @@ Tips:
          后台controller方法，判断http的方法，如果是delete执行删除，如果是post，执行添加
       3、对http的contentType进行规范
          请求时候，指定contentType,要json数据，设置成json格式的Type
+   22、拦截器
+      springmvc针对handlermapping进行拦截，
+      如果在某个handlermapping中配置拦截，结果handlermapping映射成功的handler最终使用该拦截器
+      springmvc也可以配置全局性的拦截器 ，此时框架把全局拦截器注入到每一个handlermapping中（推荐使用全局的）
 
 
 

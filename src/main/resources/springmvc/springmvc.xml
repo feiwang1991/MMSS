@@ -102,4 +102,18 @@
     <!-- springMVC默认使用MappingJacksonHttpMessageConverter对json数据进行转换，需要加入jakson包
     @RequestBody和@ResponseBody就是使用jackson-core和jackson-mapper进行json转换
     需要在配置文件中配置一个json交互的处理器适配器，但是如果使用mvc:annotation-driven的话就不需要配置-->
+
+    <!-- 配置拦截器-->
+    <mvc:interceptors>
+        <!-- 可以配置多个平级的拦截器，顺序执行-->
+        <mvc:interceptor>
+            <!-- /**表示拦截所有的url包括子url路径-->
+            <mvc:mapping path="/**"/>
+            <bean class="com.dianping.interceptor.HandlerInterceptor1"/>
+        </mvc:interceptor>
+        <mvc:interceptor>
+            <mvc:mapping path="/**"/>
+            <bean class="com.dianping.interceptor.HandlerInterceptor2"/>
+        </mvc:interceptor>
+    </mvc:interceptors>
 </beans>
